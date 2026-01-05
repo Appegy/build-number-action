@@ -1,0 +1,49 @@
+name: create
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: "Abacus namespace"
+        required: true
+        default: "appegy"
+      key:
+        description: "Counter key"
+        required: true
+        default: "smoke"
+      initializer:
+        description: "Starting value"
+        required: false
+        default: "0"
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create counter (admin_key is returned once)
+        id: create
+        uses: Appegy/Abacus@v1
+        with:
+          operation: create
+          namespace: ${{ inputs.namespace }}
+          key: ${{ inputs.key }}
+          initializer: ${{ inputs.initializer }}
+
+      - name: Write admin key to file
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p abacus
+          cat > abacus/abacus-admin-key.txt << 'EOF'
+          namespace=${{ inputs.namespace }}
+          key=${{ inputs.key }}
+          admin_key=${{ steps.create.outputs.admin_key }}
+          EOF
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: abacus-admin-key-${{ inputs.namespace }}-${{ inputs.key }}
+          path: abacus/abacus-admin-key.txt
+          if-no-files-found: error
+          retention-days: 1

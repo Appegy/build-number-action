@@ -12,24 +12,24 @@ jobs:
         uses: Appegy/Abacus@v1
         with:
           operation: hit
-          namespace: ci-appegy-smoke
-          key: build-smoke
+          namespace: appegy
+          key: smoke
 
       - name: Get (should match or be <= hit)
         id: get
         uses: Appegy/Abacus@v1
         with:
           operation: get
-          namespace: ci-appegy-smoke
-          key: build-smoke
+          namespace: appegy
+          key: smoke
 
       - name: Info (should expose fields)
         id: info
         uses: Appegy/Abacus@v1
         with:
           operation: info
-          namespace: ci-appegy-smoke
-          key: build-smoke
+          namespace: appegy
+          key: smoke
 
       - name: Assert outputs are present
         shell: bash
